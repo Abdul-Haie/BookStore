@@ -2,6 +2,8 @@ import React, { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import { useForm } from "react-hook-form";
 import Login from "./Login";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 function Signup() {
   const {
@@ -12,8 +14,23 @@ function Signup() {
 
   const navigate = useNavigate(); // Initialize the useNavigate hook
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit =async (data) => {
+    const userInfo={
+      fullname:data.fullname,
+      email:data.email,
+      password:data.password,
+    }
+    await axios.post("http://localhost:4001/user/signup", userInfo)
+    .then((res)=>{
+        console.log(res.data)
+        if(res.data){
+          toast.success("Signup Successfully!");
+        }
+        localStorage.setItem("User",JSON.stringify(res.data.user));
+    }).catch((err)=>{
+      console.log(err)
+      toast.error("Error: "+err.response.data.message);
+    })
   };
 
   // Function to close the dialog and navigate back to the homepage
@@ -46,10 +63,10 @@ function Signup() {
                   type="text"
                   placeholder="Enter your Fullname"
                   className="w-80 px-3 py-1 rounded-md outlone-none"
-                  {...register("name", { required: "Name is required" })}
+                  {...register("fullname", { required: "Name is required" })}
                 />
                 <br />
-                {errors.name && (
+                {errors.fullname && (
                   <span className="text-red-500">{errors.name.message}</span>
                 )}
               </div>
