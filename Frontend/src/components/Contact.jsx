@@ -1,6 +1,8 @@
+import axios from "axios";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 function Contact() {
     const {
@@ -9,8 +11,22 @@ function Contact() {
         formState: { errors },
       } = useForm();
 
-      const onSubmit = (data) => {
-        console.log(data);
+      const onSubmit =async (data) => {
+        const userQuery={
+          fullname:data.fullname,
+          email:data.email,
+          note:data.note,
+        }
+        await axios.post("http://localhost:4001/contact/quereyMessage", userQuery)
+        .then((res)=>{
+          console.log(res.data)
+          if(res.data){
+            toast.success("Message Sent Successfully!");
+          }
+        }).catch((err)=>{
+          console.log(err)
+          toast.error("Error: "+err.response.data.message);
+        })
       };
     
     
@@ -47,10 +63,10 @@ function Contact() {
               type="text"
               className="mt-1 block w-full px-4 py-2 border border-pink-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
               placeholder="Your Name"
-              {...register("name", { required: "Email is required" })}
+              {...register("fullname", { required: "Email is required" })}
             />
             <br />
-                {errors.name && (
+                {errors.fullname && (
                   <span className="text-red-500">{errors.email.message}</span>
                 )}
           </div>
@@ -81,10 +97,10 @@ function Contact() {
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows="4"
               placeholder="Your Message"
-              {...register("message", { required: "Email is required" })}
+              {...register("note", { required: "Email is required" })}
             ></textarea>
             <br />
-                {errors.message && (
+                {errors.note && (
                   <span className="text-red-500">{errors.email.message}</span>
                 )}
           </div>
